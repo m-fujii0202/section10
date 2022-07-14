@@ -1,36 +1,24 @@
 import axios from "axios";
-import { useState } from "react";
+import { useCallback, useState } from "react"
 import { User } from "../types/api/user";
-import { UserProfile } from "../types/userProfile";
+import { useMessage } from "./useMessage";
 
-//全ユーザーの一覧を取得するカスタムフック
-export const useAllUsers = () => {
-    const [userProfiles,setUserProfiles] = useState<Array<UserProfile>>([]); 
+export const useAllUsers = ()=>{
+    const { showMessage } = useMessage();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    const [users, setUsers] = useState<Array<User>>([]); 
 
-const getUsers = ()=>{
-    setLoading(true);
-    setLoading(false);
+    const getUsers = useCallback(()=>{
+        setLoading(true)
+        axios
+        .get<Array<User>>("https://jsonplaceholder.typicode.com/users")
+        .then((res)=> setUsers(res.data))
+        .catch(()=>{
+            showMessage({ title:"ユーザー取得に失敗しました", status:"error"})
+        }).finally(()=>{
+            setLoading(false)
+        });
+    },[]);
 
-  axios
-    .get<Array<User>>("https://jsonplaceholder.typicode.com/users")
-    .then((res) => {
-    const data = res.data.map((user)=>({
-      id:user.id,
-      name:`${user.name}(${user.username})`,
-      email: user.email,
-      address:`${user.address.city}${user.address.suite}${user.address.street}`
-    }));
-    setUserProfiles(data);
-  }) 
-   .catch(() => {
-    setError(true)
-  }) 
-   .finally(() => {
-    setLoading(false)
-  })
-};
-
-return{ getUsers, userProfiles, loading, error };
-};
+     return{getUsers, loading, users}
+    }

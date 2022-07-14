@@ -6,7 +6,7 @@ export type User = {
     address: {
       street: string;
       suite: string;
-      city: string;
+      city:string;
       zipcode: string;
       geo: {
         lat: string;
@@ -18,6 +18,6 @@ export type User = {
     company: {
       name: string;
       catchPhrase: string;
-      bs: string 
-}
+      bs: string
+    }
 }
